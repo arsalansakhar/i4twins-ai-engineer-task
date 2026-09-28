@@ -91,7 +91,37 @@ def test_single_skill_decision_routes_to_selected_node(
     assert result["final_response"] == expected_node
 
 
-def test_two_skill_decision_routes_to_multi_skill_control_path() -> None:
+def test_two_skill_decision_routes_through_multi_skill_orchestrator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def summarizer(state: dict[str, object]) -> dict[str, str]:
+        return {"final_response": "summary"}
+
+    def translator(state: dict[str, object]) -> dict[str, str]:
+        assert "summary" in str(state["user_input"])
+        return {"final_response": "translated summary"}
+
+    monkeypatch.setattr(
+        graph_module,
+        "make_summarizer_node",
+        lambda llm: summarizer,
+    )
+    monkeypatch.setattr(
+        graph_module,
+        "make_translator_node",
+        lambda llm: translator,
+    )
+    monkeypatch.setattr(
+        graph_module,
+        "make_general_chat_node",
+        lambda llm: _marker_node("general_chat"),
+    )
+    monkeypatch.setattr(
+        graph_module,
+        "calculator_node",
+        _marker_node("calculator"),
+    )
+
     decision = RouterDecision(
         skills=["summarizer", "translator"],
         execution_mode="sequential",
@@ -100,7 +130,4 @@ def test_two_skill_decision_routes_to_multi_skill_control_path() -> None:
 
     result = graph.invoke({"user_input": "summarize, then translate"})
 
-    assert result["final_response"] == (
-        "[Milestone 1] Multi-skill execution pending: "
-        "sequential: summarizer -> translator"
-    )
+    assert result["final_response"] == "translated summary"

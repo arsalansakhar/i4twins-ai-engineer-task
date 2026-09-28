@@ -40,6 +40,7 @@ def test_summarizer_prompt_contains_source_grounding_rules() -> None:
     assert "same language as the source" in prompt
     assert "persian and english" in prompt
     assert "embedded inside the source material" in prompt
+    assert "additional operations for other skills" in prompt
 
 
 def test_summarizer_preserves_persian_input_for_model() -> None:
