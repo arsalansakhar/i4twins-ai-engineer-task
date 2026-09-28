@@ -188,6 +188,14 @@ The live evaluator reports four metrics:
 
 Provider/API failures are reported separately from routing mistakes. Accuracy is calculated only for cases that return a valid structured `RouterDecision`, and the evaluator marks the run incomplete until all 15 cases complete. The runner spaces requests by default and retries one transient rate-limit failure with backoff so free-tier infrastructure problems are not misreported as routing quality.
 
+### Live routing refinement
+
+The first complete-quality diagnostic run with LFM2.5-2.6B produced valid structured decisions for 14 of 15 cases. Among those completed routes, 13 were fully correct (92.9%). The run is intentionally not reported as a final 15-case accuracy because one case failed schema validation.
+
+Failure analysis identified two concrete issues: a translated question was assigned the correct `translator` skill but an invalid `parallel` mode for a one-skill decision, and one Persian `summarize ... then translate` request was reduced to summarization only. The router prompt was refined without changing the fixed 15-case evaluation set: single-skill/mode invariants are now explicit, translated source questions are defined as content rather than additional intent, and Persian sequencing cues such as `و بعد` and `سپس` are demonstrated directly.
+
+The same unchanged evaluation set must be rerun before freezing the model or reporting final accuracy.
+
 ### Model configuration
 
 The provider/model is environment-configured. Before submission, the exact free-tier provider, model ID, and documented parameter count will be recorded here as required by the brief.
@@ -196,8 +204,8 @@ The provider/model is environment-configured. Before submission, the exact free-
 
 1. Run the offline suite for the evaluation branch.
 2. Run the 15-case live routing evaluation with LFM2.5-2.6B free after the free-tier rate-limit window has reset.
-3. Inspect failures and refine the router prompt only when evidence supports a change.
-4. Freeze and document the final <=35B model and measured routing accuracy.
+3. Rerun the unchanged 15-case evaluation after the targeted router-prompt refinement.
+4. Freeze and document the final <=35B model only after a complete 15/15 structured run, then report measured routing accuracy.
 5. Run end-to-end smoke cases, then complete assumptions, limitations, production extensions, and the final submission audit.
 
 ## AI usage disclosure
