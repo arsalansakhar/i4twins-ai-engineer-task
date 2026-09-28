@@ -6,7 +6,7 @@ from langgraph.graph import END, START, StateGraph
 from app.llm import get_llm
 from app.router import make_router_node
 from app.skills.calculator import calculator_node
-from app.skills.general_chat import general_chat_node
+from app.skills.general_chat import make_general_chat_node
 from app.skills.summarizer import make_summarizer_node
 from app.skills.translator import make_translator_node
 from app.state import AgentState
@@ -40,7 +40,7 @@ def build_graph(llm: BaseChatModel | None = None):
     graph.add_node("summarizer", make_summarizer_node(model))
     graph.add_node("translator", make_translator_node(model))
     graph.add_node("calculator", calculator_node)
-    graph.add_node("general_chat", general_chat_node)
+    graph.add_node("general_chat", make_general_chat_node(model))
     graph.add_node("multi_skill", _multi_skill_placeholder)
 
     graph.add_edge(START, "router")
