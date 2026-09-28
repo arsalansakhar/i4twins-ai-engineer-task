@@ -72,12 +72,16 @@ def test_single_skill_decision_routes_to_selected_node(
         "make_translator_node",
         lambda llm: _marker_node("translator"),
     )
-    for node_name in ("calculator", "general_chat"):
-        monkeypatch.setattr(
-            graph_module,
-            f"{node_name}_node",
-            _marker_node(node_name),
-        )
+    monkeypatch.setattr(
+        graph_module,
+        "make_general_chat_node",
+        lambda llm: _marker_node("general_chat"),
+    )
+    monkeypatch.setattr(
+        graph_module,
+        "calculator_node",
+        _marker_node("calculator"),
+    )
 
     decision = RouterDecision(skills=[skill], execution_mode="single")
     graph = graph_module.build_graph(_ChatModelStub(decision))
