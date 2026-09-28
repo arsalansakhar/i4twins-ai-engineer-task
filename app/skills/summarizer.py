@@ -1,7 +1,27 @@
-"""Summarizer node placeholder for Milestone 1."""
+"""LLM-backed summarizer skill."""
 
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from app.llm import get_llm
+from app.prompts.summarizer import SUMMARIZER_SYSTEM_PROMPT
 from app.state import AgentState
 
 
-def summarizer_node(state: AgentState) -> dict[str, str]:
-    return {"final_response": "[Milestone 1] Summarizer implementation pending."}
+def make_summarizer_node(llm: BaseChatModel | None = None):
+    """Return a LangGraph node that summarizes the user's input."""
+
+    model = llm or get_llm()
+
+    def summarizer_node(state: AgentState) -> dict[str, str]:
+        response = model.invoke(
+            [
+                SystemMessage(content=SUMMARIZER_SYSTEM_PROMPT),
+                HumanMessage(content=state["user_input"]),
+            ]
+        )
+        if not isinstance(response.content, str):
+            raise TypeError("Summarizer model returned non-text content.")
+        return {"final_response": response.content.strip()}
+
+    return summarizer_node
