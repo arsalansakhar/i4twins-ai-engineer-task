@@ -22,11 +22,15 @@ class _ChatModelStub:
     def __init__(self, decision: RouterDecision) -> None:
         self.decision = decision
         self.schema: type[RouterDecision] | None = None
+        self.structured_kwargs: dict[str, object] = {}
 
     def with_structured_output(
-        self, schema: type[RouterDecision]
+        self,
+        schema: type[RouterDecision],
+        **kwargs: object,
     ) -> _StructuredModelStub:
         self.schema = schema
+        self.structured_kwargs = kwargs
         return _StructuredModelStub(self.decision)
 
 
@@ -37,6 +41,7 @@ def test_router_node_produces_valid_router_decision() -> None:
     result = make_router_node(model)({"user_input": "Summarize this text."})
 
     assert model.schema is RouterDecision
+    assert model.structured_kwargs == {"method": "json_schema", "strict": True}
     assert result == {"router_decision": expected}
     assert isinstance(result["router_decision"], RouterDecision)
 
