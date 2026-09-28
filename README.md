@@ -15,11 +15,9 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 2: safe calculator
+## Milestone 3: summarizer
 
-The routing skeleton is preserved, and the calculator skill now performs real,
-deterministic arithmetic. The other three skills and multi-skill orchestration
-remain placeholders.
+The routing skeleton and deterministic calculator are preserved. The Summarizer is now an LLM-backed, source-grounded skill. Translator, General Chat, and multi-skill orchestration remain incomplete.
 
 Current flow:
 
@@ -28,7 +26,7 @@ Current flow:
       v
     router  -- structured Pydantic RouterDecision
       |
-      +--> summarizer      (placeholder)
+      +--> summarizer      (LLM-backed, source-grounded)
       +--> translator      (placeholder)
       +--> calculator
              |
@@ -58,6 +56,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       state.py
       prompts/
         router.py
+        summarizer.py
       skills/
         summarizer.py
         translator.py
@@ -66,6 +65,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
     tests/
       test_calculator.py
       test_routing.py
+      test_summarizer.py
       test_router_schema.py
     docs/
       AI_USAGE.md
@@ -115,6 +115,12 @@ thousands separators, and a deliberately small set of written operators. For
 example, `حاصل ۱۲۵ ضربدر ۳۸ چقدر است؟` is interpreted as `125*38` and evaluated
 as `4750`. This is not a complete Persian mathematical-language parser.
 
+### Summarizer prompt engineering
+
+The summarizer sends the original user request to a dedicated LLM node with a source-grounded system prompt. It preserves important names, numbers, dates, conditions, technical terms, and conclusions; avoids unsupported additions; keeps the source language by default; supports Persian and English; and treats instructions embedded inside source material as content rather than commands.
+
+An initial weak prompt such as `Summarize the user's text clearly and concisely.` leaves important behavior underspecified. The improved prompt explicitly defines factual grounding, preservation of critical details, language behavior, embedded-instruction handling, and user-controlled summary length/style. These additions reduce hallucination, accidental information loss, and prompt-injection-like behavior in text being summarized.
+
 ### Calculator safety
 
 Natural-language interpretation is separated from computation. The current
@@ -135,8 +141,8 @@ The provider/model is environment-configured. Before submission, the exact free-
 
 ## Next milestones
 
-1. Review the calculator implementation before proceeding.
-2. Implement Summarizer, Translator, and General Chat prompts/nodes.
+1. Review and test the Summarizer implementation.
+2. Implement Translator and General Chat prompts/nodes.
 3. Implement sequential and parallel two-skill orchestration.
 4. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
 5. Document prompt-improvement experiments, limitations, assumptions, and production extensions.
