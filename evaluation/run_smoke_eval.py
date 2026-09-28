@@ -28,6 +28,26 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
     return data
 
 
+def select_cases(
+    cases: list[dict[str, Any]],
+    case_ids: list[str] | None,
+) -> list[dict[str, Any]]:
+    """Select named cases so a rate-limited live run can resume cheaply."""
+
+    if not case_ids:
+        return cases
+
+    requested = set(case_ids)
+    selected = [case for case in cases if str(case["id"]) in requested]
+    found = {str(case["id"]) for case in selected}
+    missing = requested - found
+    if missing:
+        raise ValueError(
+            "Unknown smoke case id(s): " + ", ".join(sorted(missing))
+        )
+    return selected
+
+
 def _classify_error(exc: Exception) -> str:
     text = f"{type(exc).__name__}: {exc}".lower()
     if "ratelimit" in text or "rate limit" in text or "429" in text:
@@ -216,13 +236,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        dest="case_ids",
+        help="Run only this smoke case ID; repeat the option to select multiple cases.",
+    )
     parser.add_argument("--delay-seconds", type=float, default=6.0)
     parser.add_argument("--max-retries", type=int, default=1)
     parser.add_argument("--retry-backoff-seconds", type=float, default=15.0)
     args = parser.parse_args()
 
+    cases = select_cases(load_cases(args.cases), args.case_ids)
     report = run_smoke_cases(
-        load_cases(args.cases),
+        cases,
         delay_seconds=args.delay_seconds,
         max_retries=args.max_retries,
         retry_backoff_seconds=args.retry_backoff_seconds,
