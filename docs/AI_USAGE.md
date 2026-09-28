@@ -78,3 +78,11 @@ Third Milestone 7 live-evaluation follow-up:
 - one translated-question case violated the one-skill/single-mode invariant;
 - one Persian summarize-then-translate case missed the second operation;
 - ChatGPT refined only those observed failure modes while keeping the 15-case evaluation set unchanged.
+
+
+Final Milestone 7 validation:
+- the unchanged 15-case routing set was rerun after the evidence-driven prompt refinement;
+- all 15 cases returned valid structured decisions;
+- ordered-skill, skill-set, execution-mode, and full-route accuracy were each 100.0%;
+- the offline suite passed 67/67 tests;
+- ChatGPT helped interpret and document the results, while the live run itself was executed and verified by the candidate.
