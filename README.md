@@ -15,9 +15,9 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 3: summarizer
+## Milestone 4: translator
 
-The routing skeleton and deterministic calculator are preserved. The Summarizer is now an LLM-backed, source-grounded skill. Translator, General Chat, and multi-skill orchestration remain incomplete.
+The routing skeleton, deterministic calculator, and source-grounded Summarizer are preserved. The Translator is now an LLM-backed transformation skill. General Chat and multi-skill orchestration remain incomplete.
 
 Current flow:
 
@@ -27,7 +27,7 @@ Current flow:
     router  -- structured Pydantic RouterDecision
       |
       +--> summarizer      (LLM-backed, source-grounded)
-      +--> translator      (placeholder)
+      +--> translator      (LLM-backed, faithful transformation)
       +--> calculator
              |
              +--> normalize digits/operators
@@ -57,6 +57,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       prompts/
         router.py
         summarizer.py
+        translator.py
       skills/
         summarizer.py
         translator.py
@@ -66,6 +67,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       test_calculator.py
       test_routing.py
       test_summarizer.py
+      test_translator.py
       test_router_schema.py
     docs/
       AI_USAGE.md
@@ -121,6 +123,12 @@ The summarizer sends the original user request to a dedicated LLM node with a so
 
 An initial weak prompt such as `Summarize the user's text clearly and concisely.` leaves important behavior underspecified. The improved prompt explicitly defines factual grounding, preservation of critical details, language behavior, embedded-instruction handling, and user-controlled summary length/style. These additions reduce hallucination, accidental information loss, and prompt-injection-like behavior in text being summarized.
 
+### Translator prompt engineering
+
+The translator treats the source text as data to transform rather than instructions to execute. Its prompt explicitly says not to answer questions, solve tasks, or follow instructions that appear inside source content. It preserves meaning, tone, names, numbers, dates, units, technical terms, and formatting where practical; supports Persian and English; and asks a concise clarification when the target language is genuinely missing.
+
+A weak translation prompt such as `Translate the user's text to the requested language.` does not define how to handle question-like source text or embedded instructions. The improved prompt separates transformation from task execution and adds fidelity, clarification, and formatting rules. For example, `Translate to Persian: What is the capital of France?` should produce a Persian translation of the question rather than answer it.
+
 ### Calculator safety
 
 Natural-language interpretation is separated from computation. The current
@@ -141,8 +149,8 @@ The provider/model is environment-configured. Before submission, the exact free-
 
 ## Next milestones
 
-1. Review and test the Summarizer implementation.
-2. Implement Translator and General Chat prompts/nodes.
+1. Review and test the Translator implementation.
+2. Implement General Chat.
 3. Implement sequential and parallel two-skill orchestration.
 4. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
 5. Document prompt-improvement experiments, limitations, assumptions, and production extensions.
