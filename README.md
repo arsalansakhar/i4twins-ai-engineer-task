@@ -15,9 +15,9 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 5: general chat
+## Milestone 6: multi-skill orchestration
 
-The routing skeleton and all four required single-skill implementations are now present: source-grounded Summarizer, faithful Translator, deterministic Calculator, and LLM-backed General Chat. Multi-skill orchestration remains incomplete.
+The routing skeleton and all four required skills are present. Two-skill requests are now executed according to the router's validated execution mode: dependent operations run sequentially, while independent operations run concurrently.
 
 Current flow:
 
@@ -34,7 +34,10 @@ Current flow:
              +--> extract arithmetic expression
              +--> restricted AST evaluator
       +--> general_chat    (LLM-backed fallback/general Q&A)
-      +--> multi_skill     (orchestration placeholder)
+      +--> multi_skill
+             |
+             +--> sequential: skill A -> handoff -> skill B
+             +--> parallel: skill A || skill B -> ordered combination
       |
       v
      END
@@ -45,7 +48,7 @@ The router returns:
 - an execution mode: single, sequential, or parallel;
 - validation that prevents more than two skills, duplicate skills, and inconsistent execution modes.
 
-For two-skill requests, the router distinguishes dependency from independence. For example, "summarize this and translate the summary" is sequential, while an unrelated translation plus calculation can be parallel. The actual two-skill execution strategy will be implemented in a later milestone.
+For two-skill requests, the router distinguishes dependency from independence. `summarize this and translate the summary` is sequential: the first skill result becomes the content processed by the second skill. An independent request such as `translate hello to Persian and calculate 12 * 9` is parallel: both selected skills receive the original request and execute concurrently, then their results are combined in router-selected order.
 
 ## Project structure
 
@@ -54,6 +57,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       llm.py
       router.py
       state.py
+      orchestration.py
       prompts/
         router.py
         summarizer.py
@@ -70,6 +74,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       test_summarizer.py
       test_translator.py
       test_general_chat.py
+      test_orchestration.py
       test_router_schema.py
     docs/
       AI_USAGE.md
@@ -151,16 +156,24 @@ other Python syntax are rejected. Expression length, AST node count, exponent
 size, result magnitude, and finite numeric results are bounded to reduce
 resource-exhaustion risk. Division and modulo by zero return a controlled error.
 
+### Multi-skill execution
+
+The graph keeps exactly four user-facing skills. `multi_skill` is a control/orchestration node, not a fifth skill.
+
+For `sequential` decisions, the orchestrator executes the first selected skill, constructs a constrained handoff containing the intermediate result, and invokes the second skill. The final user-visible response is the second skill's result. Calculator handoff is intentionally stricter: only the intermediate result is passed to the calculator so its deterministic extractor cannot accidentally combine numbers from orchestration instructions.
+
+For `parallel` decisions, the two selected skill nodes run concurrently with a two-worker thread pool on the same original request. Their outputs are combined in the router-selected order. This keeps the implementation simple while demonstrating genuine concurrent execution for independent tasks.
+
 ### Model configuration
 
 The provider/model is environment-configured. Before submission, the exact free-tier provider, model ID, and documented parameter count will be recorded here as required by the brief.
 
 ## Next milestones
 
-1. Review and test the General Chat implementation.
-2. Implement sequential and parallel two-skill orchestration.
-3. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
-4. Freeze and document the final free-tier <=35B model.
+1. Review and test sequential/parallel multi-skill orchestration.
+2. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
+3. Freeze and document the final free-tier <=35B model.
+4. Run live end-to-end evaluation across all four skills and multi-skill cases.
 5. Complete assumptions, limitations, production extensions, and final submission audit.
 
 ## AI usage disclosure
