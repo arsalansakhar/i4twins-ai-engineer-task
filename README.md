@@ -101,7 +101,7 @@ On Windows PowerShell:
 
     Copy-Item .env.example .env
 
-Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `google/gemma-4-31b-it:free` (Gemma 4 31B Instruct, 30.7B parameters). It satisfies the assignment's <=35B constraint and is currently available as a free OpenRouter endpoint. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
+Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `qwen/qwen3.8-27b:free` (Qwen3.8 27B, 27B parameters). It satisfies the assignment's <=35B constraint, is currently available as a free OpenRouter endpoint, and supports JSON-schema structured outputs. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
 
 Run the offline test suite:
 
@@ -110,6 +110,8 @@ Run the offline test suite:
 Run the live routing evaluation after configuring `.env`:
 
     python -m evaluation.run_routing_eval --output evaluation/latest_results.json
+
+The default evaluator delay is 4 seconds between cases to stay below the free-tier per-minute request ceiling.
 
 Run the current CLI skeleton:
 
@@ -184,7 +186,7 @@ The live evaluator reports four metrics:
 - execution-mode accuracy: `single`, `sequential`, or `parallel`;
 - full-route accuracy: exact ordered skills plus the correct execution mode.
 
-Provider/API failures are recorded as failed cases rather than silently omitted. The JSON output can be committed or summarized in the final README after the selected model is evaluated.
+Provider/API failures are reported separately from routing mistakes. Accuracy is calculated only for cases that return a valid structured `RouterDecision`, and the evaluator marks the run incomplete until all 15 cases complete. The runner spaces requests by default and retries one transient rate-limit failure with backoff so free-tier infrastructure problems are not misreported as routing quality.
 
 ### Model configuration
 
@@ -193,7 +195,7 @@ The provider/model is environment-configured. Before submission, the exact free-
 ## Next milestones
 
 1. Run the offline suite for the evaluation branch.
-2. Run the 15-case live routing evaluation with the current free-tier candidate.
+2. Run the 15-case live routing evaluation with Qwen3.8 27B free after the free-tier rate-limit window has reset.
 3. Inspect failures and refine the router prompt only when evidence supports a change.
 4. Freeze and document the final <=35B model and measured routing accuracy.
 5. Run end-to-end smoke cases, then complete assumptions, limitations, production extensions, and the final submission audit.
