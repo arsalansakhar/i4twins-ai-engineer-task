@@ -40,6 +40,7 @@ def test_translator_prompt_treats_source_instructions_as_content() -> None:
     assert "do not add explanations" in prompt
     assert "ask one concise clarification" in prompt
     assert "persian and english" in prompt
+    assert "additional operations for other skills" in prompt
 
 
 def test_translator_preserves_persian_request_for_model() -> None:
