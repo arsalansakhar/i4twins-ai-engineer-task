@@ -4,7 +4,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.graph import END, START, StateGraph
 
 from app.llm import get_llm
-from app.orchestration import make_multi_skill_node
+from app.orchestration import SkillNode, make_multi_skill_node
 from app.router import make_router_node
 from app.skills.calculator import calculator_node
 from app.skills.general_chat import make_general_chat_node
@@ -26,7 +26,7 @@ def build_graph(llm: BaseChatModel | None = None):
     model = llm or get_llm()
     graph = StateGraph(AgentState)
 
-    skill_nodes = {
+    skill_nodes: dict[SkillName, SkillNode] = {
         "summarizer": make_summarizer_node(model),
         "translator": make_translator_node(model),
         "calculator": calculator_node,
@@ -36,10 +36,7 @@ def build_graph(llm: BaseChatModel | None = None):
     graph.add_node("router", make_router_node(model))
     for skill_name, node in skill_nodes.items():
         graph.add_node(skill_name, node)
-    graph.add_node(
-        "multi_skill",
-        make_multi_skill_node(skill_nodes),  # type: ignore[arg-type]
-    )
+    graph.add_node("multi_skill", make_multi_skill_node(skill_nodes))
 
     graph.add_edge(START, "router")
     graph.add_conditional_edges(
