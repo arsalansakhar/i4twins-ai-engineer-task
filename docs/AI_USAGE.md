@@ -26,3 +26,11 @@ For Milestone 3, ChatGPT was used to help:
 - wire the shared LLM instance into the summarizer graph path;
 - add mocked English/Persian summarizer tests;
 - document prompt-engineering improvements and limitations.
+
+
+For Milestone 4, ChatGPT was used to help:
+
+- design and implement the faithful translator prompt and node;
+- add prompt-injection-resistant translation rules for question-like and instruction-like source text;
+- wire the shared LLM instance into the translator path;
+- add mocked English/Persian translator tests and documentation.
