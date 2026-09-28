@@ -18,3 +18,11 @@ For Milestone 2, Codex was used to help:
 - design and implement the restricted AST calculator evaluator;
 - add deterministic, adversarial, and Persian-input calculator tests;
 - document the calculator architecture, restrictions, and limitations.
+
+
+For Milestone 3, ChatGPT was used to help:
+
+- design and implement the source-grounded summarizer prompt and node;
+- wire the shared LLM instance into the summarizer graph path;
+- add mocked English/Persian summarizer tests;
+- document prompt-engineering improvements and limitations.
