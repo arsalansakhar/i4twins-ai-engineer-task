@@ -70,3 +70,11 @@ Milestone 7 live-evaluation follow-up:
 Second Milestone 7 live-evaluation follow-up:
 - repeated 429s persisted on the Qwen free endpoint despite spacing and retry/backoff;
 - the candidate was switched to Liquid LFM2.5-2.6B free, which is <=35B and currently advertises JSON-schema structured outputs on OpenRouter.
+
+
+Third Milestone 7 live-evaluation follow-up:
+- the LFM2.5-2.6B diagnostic run returned 14/15 structured decisions;
+- 13/14 completed routes were fully correct (92.9%), but the run remained incomplete;
+- one translated-question case violated the one-skill/single-mode invariant;
+- one Persian summarize-then-translate case missed the second operation;
+- ChatGPT refined only those observed failure modes while keeping the 15-case evaluation set unchanged.
