@@ -8,7 +8,7 @@ from app.router import make_router_node
 from app.skills.calculator import calculator_node
 from app.skills.general_chat import general_chat_node
 from app.skills.summarizer import make_summarizer_node
-from app.skills.translator import translator_node
+from app.skills.translator import make_translator_node
 from app.state import AgentState
 
 
@@ -38,7 +38,7 @@ def build_graph(llm: BaseChatModel | None = None):
 
     graph.add_node("router", make_router_node(model))
     graph.add_node("summarizer", make_summarizer_node(model))
-    graph.add_node("translator", translator_node)
+    graph.add_node("translator", make_translator_node(model))
     graph.add_node("calculator", calculator_node)
     graph.add_node("general_chat", general_chat_node)
     graph.add_node("multi_skill", _multi_skill_placeholder)

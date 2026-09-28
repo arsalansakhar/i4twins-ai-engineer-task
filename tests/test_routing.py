@@ -67,7 +67,12 @@ def test_single_skill_decision_routes_to_selected_node(
         "make_summarizer_node",
         lambda llm: _marker_node("summarizer"),
     )
-    for node_name in ("translator", "calculator", "general_chat"):
+    monkeypatch.setattr(
+        graph_module,
+        "make_translator_node",
+        lambda llm: _marker_node("translator"),
+    )
+    for node_name in ("calculator", "general_chat"):
         monkeypatch.setattr(
             graph_module,
             f"{node_name}_node",
