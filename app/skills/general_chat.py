@@ -1,7 +1,27 @@
-"""General-chat node placeholder for Milestone 1."""
+"""LLM-backed General Chat skill."""
 
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from app.llm import get_llm
+from app.prompts.general_chat import GENERAL_CHAT_SYSTEM_PROMPT
 from app.state import AgentState
 
 
-def general_chat_node(state: AgentState) -> dict[str, str]:
-    return {"final_response": "[Milestone 1] General Chat implementation pending."}
+def make_general_chat_node(llm: BaseChatModel | None = None):
+    """Return a LangGraph node for greetings, small talk, and general questions."""
+
+    model = llm or get_llm()
+
+    def general_chat_node(state: AgentState) -> dict[str, str]:
+        response = model.invoke(
+            [
+                SystemMessage(content=GENERAL_CHAT_SYSTEM_PROMPT),
+                HumanMessage(content=state["user_input"]),
+            ]
+        )
+        if not isinstance(response.content, str):
+            raise TypeError("General Chat model returned non-text content.")
+        return {"final_response": response.content.strip()}
+
+    return general_chat_node
