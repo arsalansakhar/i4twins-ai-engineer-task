@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Generated live-evaluation reports
+evaluation/latest_results.json
+evaluation/latest_smoke_results.json
