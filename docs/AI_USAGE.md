@@ -34,3 +34,11 @@ For Milestone 4, ChatGPT was used to help:
 - add prompt-injection-resistant translation rules for question-like and instruction-like source text;
 - wire the shared LLM instance into the translator path;
 - add mocked English/Persian translator tests and documentation.
+
+
+For Milestone 5, ChatGPT was used to help:
+
+- design and implement the scoped General Chat prompt and node;
+- wire the shared LLM instance into the General Chat path;
+- add mocked English/Persian greeting and general-question tests;
+- document fallback behavior and prompt-scoping rationale.
