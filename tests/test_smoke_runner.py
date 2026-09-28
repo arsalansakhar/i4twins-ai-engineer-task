@@ -1,7 +1,7 @@
 """Offline tests for the end-to-end smoke-evaluation harness."""
 
 from app.state import RouterDecision
-from evaluation.run_smoke_eval import _check_output, run_smoke_cases
+from evaluation.run_smoke_eval import _check_output, run_smoke_cases, select_cases
 
 
 class _GraphStub:
@@ -83,3 +83,16 @@ def test_smoke_case_reports_output_failure_without_hiding_route_success() -> Non
     assert row["route_match"] is True
     assert row["output_checks_pass"] is False
     assert report["automated_passes"] == 0
+
+
+
+def test_select_cases_supports_targeted_reruns() -> None:
+    cases = [
+        {"id": "first"},
+        {"id": "second"},
+        {"id": "third"},
+    ]
+
+    selected = select_cases(cases, ["second", "third"])
+
+    assert [case["id"] for case in selected] == ["second", "third"]
