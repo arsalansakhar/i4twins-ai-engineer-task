@@ -12,7 +12,11 @@ def make_router_node(llm: BaseChatModel | None = None):
     """Return a LangGraph node that emits a validated RouterDecision."""
 
     model = llm or get_llm()
-    structured_model = model.with_structured_output(RouterDecision)
+    structured_model = model.with_structured_output(
+        RouterDecision,
+        method="json_schema",
+        strict=True,
+    )
 
     def router_node(state: AgentState) -> dict[str, RouterDecision]:
         decision = structured_model.invoke(
