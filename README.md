@@ -15,9 +15,9 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 6: multi-skill orchestration
+## Milestone 7: evaluation suite
 
-The routing skeleton and all four required skills are present. Two-skill requests are now executed according to the router's validated execution mode: dependent operations run sequentially, while independent operations run concurrently.
+The routing skeleton, all four required skills, and sequential/parallel two-skill orchestration are present. A committed 15-case routing evaluation suite now measures live skill detection and execution-mode accuracy against the configured provider.
 
 Current flow:
 
@@ -76,6 +76,11 @@ For two-skill requests, the router distinguishes dependency from independence. `
       test_general_chat.py
       test_orchestration.py
       test_router_schema.py
+      test_evaluation_cases.py
+    evaluation/
+      __init__.py
+      evaluation_cases.json
+      run_routing_eval.py
     docs/
       AI_USAGE.md
     main.py
@@ -96,11 +101,15 @@ On Windows PowerShell:
 
     Copy-Item .env.example .env
 
-Set OPENROUTER_API_KEY and LLM_MODEL in .env. The final model must be available on a free tier and have no more than 35 billion parameters. The concrete model will be frozen and documented after provider/model verification and routing evaluation.
+Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `google/gemma-4-31b-it:free` (Gemma 4 31B Instruct, 30.7B parameters). It satisfies the assignment's <=35B constraint and is currently available as a free OpenRouter endpoint. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
 
-Run the schema tests:
+Run the offline test suite:
 
-    pytest
+    python -m pytest -v
+
+Run the live routing evaluation after configuring `.env`:
+
+    python -m evaluation.run_routing_eval --output evaluation/latest_results.json
 
 Run the current CLI skeleton:
 
@@ -164,17 +173,30 @@ For `sequential` decisions, the orchestrator executes the first selected skill, 
 
 For `parallel` decisions, the two selected skill nodes run concurrently with a two-worker thread pool on the same original request. Their outputs are combined in the router-selected order. This keeps the implementation simple while demonstrating genuine concurrent execution for independent tasks.
 
+### Routing evaluation
+
+The committed evaluation set contains 15 prompts covering all four skills, English and Persian, sequential and parallel two-skill requests, translation of question-like text, a missing-target-language translation case, and a general fallback case.
+
+The live evaluator reports four metrics:
+
+- ordered skill accuracy: exact skill list and order;
+- skill-set accuracy: correct selected skills regardless of order;
+- execution-mode accuracy: `single`, `sequential`, or `parallel`;
+- full-route accuracy: exact ordered skills plus the correct execution mode.
+
+Provider/API failures are recorded as failed cases rather than silently omitted. The JSON output can be committed or summarized in the final README after the selected model is evaluated.
+
 ### Model configuration
 
 The provider/model is environment-configured. Before submission, the exact free-tier provider, model ID, and documented parameter count will be recorded here as required by the brief.
 
 ## Next milestones
 
-1. Review and test sequential/parallel multi-skill orchestration.
-2. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
-3. Freeze and document the final free-tier <=35B model.
-4. Run live end-to-end evaluation across all four skills and multi-skill cases.
-5. Complete assumptions, limitations, production extensions, and final submission audit.
+1. Run the offline suite for the evaluation branch.
+2. Run the 15-case live routing evaluation with the current free-tier candidate.
+3. Inspect failures and refine the router prompt only when evidence supports a change.
+4. Freeze and document the final <=35B model and measured routing accuracy.
+5. Run end-to-end smoke cases, then complete assumptions, limitations, production extensions, and the final submission audit.
 
 ## AI usage disclosure
 
