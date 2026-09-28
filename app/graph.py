@@ -1,12 +1,13 @@
-"""LangGraph skeleton: START -> router -> selected execution path -> END."""
+"""LangGraph workflow for routing requests to the four supported skills."""
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langgraph.graph import END, START, StateGraph
 
+from app.llm import get_llm
 from app.router import make_router_node
 from app.skills.calculator import calculator_node
 from app.skills.general_chat import general_chat_node
-from app.skills.summarizer import summarizer_node
+from app.skills.summarizer import make_summarizer_node
 from app.skills.translator import translator_node
 from app.state import AgentState
 
@@ -30,17 +31,13 @@ def _multi_skill_placeholder(state: AgentState) -> dict[str, str]:
 
 
 def build_graph(llm: BaseChatModel | None = None):
-    """Build the Milestone 1 graph.
+    """Build the current agent graph with one shared configured LLM instance."""
 
-    Single-skill requests already route to one of the four explicit skill
-    nodes. Two-skill orchestration is deliberately isolated behind a control
-    node for implementation in the next milestone.
-    """
-
+    model = llm or get_llm()
     graph = StateGraph(AgentState)
 
-    graph.add_node("router", make_router_node(llm))
-    graph.add_node("summarizer", summarizer_node)
+    graph.add_node("router", make_router_node(model))
+    graph.add_node("summarizer", make_summarizer_node(model))
     graph.add_node("translator", translator_node)
     graph.add_node("calculator", calculator_node)
     graph.add_node("general_chat", general_chat_node)
