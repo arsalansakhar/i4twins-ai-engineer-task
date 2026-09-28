@@ -1,4 +1,4 @@
-"""Focused unit tests for the Milestone 1 routing layer."""
+"""Focused unit tests for the routing layer."""
 
 from collections.abc import Callable
 
@@ -62,12 +62,18 @@ def test_single_skill_decision_routes_to_selected_node(
     skill: str,
     expected_node: str,
 ) -> None:
-    for node_name in ("summarizer", "translator", "calculator", "general_chat"):
+    monkeypatch.setattr(
+        graph_module,
+        "make_summarizer_node",
+        lambda llm: _marker_node("summarizer"),
+    )
+    for node_name in ("translator", "calculator", "general_chat"):
         monkeypatch.setattr(
             graph_module,
             f"{node_name}_node",
             _marker_node(node_name),
         )
+
     decision = RouterDecision(skills=[skill], execution_mode="single")
     graph = graph_module.build_graph(_ChatModelStub(decision))
 
