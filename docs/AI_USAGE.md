@@ -58,3 +58,10 @@ For Milestone 7, ChatGPT was used to help:
 - implement the live evaluation harness and strict routing metrics;
 - add offline validation tests for evaluation coverage;
 - research a current free-tier <=35B model candidate and document the evaluation workflow.
+
+
+Milestone 7 live-evaluation follow-up:
+- the first Gemma run was dominated by free-tier/upstream HTTP 429 failures and one non-schema output;
+- ChatGPT helped separate provider availability from routing-quality metrics;
+- the evaluator was updated with spacing, conservative retry/backoff, and incomplete-run reporting;
+- the candidate was changed to Qwen3.8 27B free because the current OpenRouter endpoint is <=35B and supports JSON-schema structured outputs.
