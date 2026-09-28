@@ -101,7 +101,7 @@ On Windows PowerShell:
 
     Copy-Item .env.example .env
 
-Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `liquid/lfm-2.5-2.6b:free` (LFM2.5-2.6B, 2.6B parameters). It satisfies the assignment's <=35B constraint, is currently available as a free OpenRouter endpoint, and supports JSON-schema structured outputs. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
+Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The final model used for this prototype is `liquid/lfm-2.5-2.6b:free` (Liquid LFM2.5-2.6B, 2.6B parameters) through OpenRouter. It satisfies the assignment's <=35B constraint and is available through OpenRouter's free tier. The router requests JSON-schema structured output and validates the result with Pydantic.
 
 Run the offline test suite:
 
@@ -194,19 +194,37 @@ The first complete-quality diagnostic run with LFM2.5-2.6B produced valid struct
 
 Failure analysis identified two concrete issues: a translated question was assigned the correct `translator` skill but an invalid `parallel` mode for a one-skill decision, and one Persian `summarize ... then translate` request was reduced to summarization only. The router prompt was refined without changing the fixed 15-case evaluation set: single-skill/mode invariants are now explicit, translated source questions are defined as content rather than additional intent, and Persian sequencing cues such as `و بعد` and `سپس` are demonstrated directly.
 
-The same unchanged evaluation set must be rerun before freezing the model or reporting final accuracy.
+The unchanged evaluation set was rerun after the targeted refinement. All 15 prompts returned valid structured decisions and every route matched the expected ordered skills and execution mode.
+
+Final routing evaluation:
+
+| Metric | Result |
+| --- | ---: |
+| Structured routing decisions | 15/15 |
+| Ordered skill accuracy | 100.0% |
+| Skill-set accuracy | 100.0% |
+| Execution-mode accuracy | 100.0% |
+| Full-route accuracy | 100.0% |
+| Rate-limit errors | 0 |
+| Model-output errors | 0 |
+| Other provider/runtime errors | 0 |
+
+The offline suite also passed 67/67 tests on Python 3.12.3. These results describe this fixed 15-case evaluation set; they are not a claim of universal routing accuracy.
 
 ### Model configuration
 
-The provider/model is environment-configured. Before submission, the exact free-tier provider, model ID, and documented parameter count will be recorded here as required by the brief.
+Provider: OpenRouter  
+Model: `liquid/lfm-2.5-2.6b:free`  
+Model family/size: Liquid LFM2.5-2.6B, 2.6B parameters  
+Configured LLM count: one shared LLM configuration for router, summarizer, translator, and General Chat; the calculator is deterministic and does not use an LLM.
 
-## Next milestones
+The model is environment-configured so it can be replaced without changing graph code. The submitted evaluation is tied to the exact model ID above.
 
-1. Run the offline suite for the evaluation branch.
-2. Run the 15-case live routing evaluation with LFM2.5-2.6B free after the free-tier rate-limit window has reset.
-3. Rerun the unchanged 15-case evaluation after the targeted router-prompt refinement.
-4. Freeze and document the final <=35B model only after a complete 15/15 structured run, then report measured routing accuracy.
-5. Run end-to-end smoke cases, then complete assumptions, limitations, production extensions, and the final submission audit.
+## Remaining validation before submission
+
+1. Run end-to-end smoke cases through the compiled graph for each single skill plus sequential and parallel two-skill flows.
+2. Review the actual user-visible outputs, especially Persian summarization/translation and clarification behavior.
+3. Complete the final limitations, production-extension, assumptions, and submission-hygiene audit.
 
 ## AI usage disclosure
 
