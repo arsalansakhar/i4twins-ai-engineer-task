@@ -101,7 +101,7 @@ On Windows PowerShell:
 
     Copy-Item .env.example .env
 
-Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `qwen/qwen3.8-27b:free` (Qwen3.8 27B, 27B parameters). It satisfies the assignment's <=35B constraint, is currently available as a free OpenRouter endpoint, and supports JSON-schema structured outputs. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
+Set `OPENROUTER_API_KEY` in `.env`; never commit the real key. The current evaluation candidate is `liquid/lfm-2.5-2.6b:free` (LFM2.5-2.6B, 2.6B parameters). It satisfies the assignment's <=35B constraint, is currently available as a free OpenRouter endpoint, and supports JSON-schema structured outputs. The model will be frozen as the final submission model only after the live routing evaluation succeeds.
 
 Run the offline test suite:
 
@@ -195,7 +195,7 @@ The provider/model is environment-configured. Before submission, the exact free-
 ## Next milestones
 
 1. Run the offline suite for the evaluation branch.
-2. Run the 15-case live routing evaluation with Qwen3.8 27B free after the free-tier rate-limit window has reset.
+2. Run the 15-case live routing evaluation with LFM2.5-2.6B free after the free-tier rate-limit window has reset.
 3. Inspect failures and refine the router prompt only when evidence supports a change.
 4. Freeze and document the final <=35B model and measured routing accuracy.
 5. Run end-to-end smoke cases, then complete assumptions, limitations, production extensions, and the final submission audit.
