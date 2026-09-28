@@ -15,9 +15,9 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 4: translator
+## Milestone 5: general chat
 
-The routing skeleton, deterministic calculator, and source-grounded Summarizer are preserved. The Translator is now an LLM-backed transformation skill. General Chat and multi-skill orchestration remain incomplete.
+The routing skeleton and all four required single-skill implementations are now present: source-grounded Summarizer, faithful Translator, deterministic Calculator, and LLM-backed General Chat. Multi-skill orchestration remains incomplete.
 
 Current flow:
 
@@ -33,7 +33,7 @@ Current flow:
              +--> normalize digits/operators
              +--> extract arithmetic expression
              +--> restricted AST evaluator
-      +--> general_chat    (placeholder / fallback)
+      +--> general_chat    (LLM-backed fallback/general Q&A)
       +--> multi_skill     (orchestration placeholder)
       |
       v
@@ -58,6 +58,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
         router.py
         summarizer.py
         translator.py
+        general_chat.py
       skills/
         summarizer.py
         translator.py
@@ -68,6 +69,7 @@ For two-skill requests, the router distinguishes dependency from independence. F
       test_routing.py
       test_summarizer.py
       test_translator.py
+      test_general_chat.py
       test_router_schema.py
     docs/
       AI_USAGE.md
@@ -129,6 +131,12 @@ The translator treats the source text as data to transform rather than instructi
 
 A weak translation prompt such as `Translate the user's text to the requested language.` does not define how to handle question-like source text or embedded instructions. The improved prompt separates transformation from task execution and adds fidelity, clarification, and formatting rules. For example, `Translate to Persian: What is the capital of France?` should produce a Persian translation of the question rather than answer it.
 
+### General Chat behavior
+
+General Chat handles greetings, small talk, general questions, and requests that do not clearly match the other specialized skills. Its prompt defaults to the user's language, supports Persian and English, keeps casual interactions concise, answers general questions directly, and asks a short clarification when the request is genuinely unclear. It also avoids exposing internal routing or graph details unless explicitly asked.
+
+A weak prompt such as `Be a helpful assistant.` is too broad for a routed multi-skill architecture because it can blur skill boundaries. The final prompt scopes General Chat to fallback/general interaction and explicitly avoids pretending that specialized summarization, translation, or deterministic calculation has occurred.
+
 ### Calculator safety
 
 Natural-language interpretation is separated from computation. The current
@@ -149,11 +157,11 @@ The provider/model is environment-configured. Before submission, the exact free-
 
 ## Next milestones
 
-1. Review and test the Translator implementation.
-2. Implement General Chat.
-3. Implement sequential and parallel two-skill orchestration.
-4. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
-5. Document prompt-improvement experiments, limitations, assumptions, and production extensions.
+1. Review and test the General Chat implementation.
+2. Implement sequential and parallel two-skill orchestration.
+3. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
+4. Freeze and document the final free-tier <=35B model.
+5. Complete assumptions, limitations, production extensions, and final submission audit.
 
 ## AI usage disclosure
 
