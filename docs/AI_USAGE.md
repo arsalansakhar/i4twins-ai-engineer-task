@@ -50,3 +50,11 @@ For Milestone 6, ChatGPT was used to help:
 - implement dependent sequential handoff and genuine concurrent parallel execution;
 - add orchestration and graph-path tests;
 - document execution semantics and calculator-specific handoff safety.
+
+
+For Milestone 7, ChatGPT was used to help:
+
+- design the 15-case English/Persian routing evaluation set;
+- implement the live evaluation harness and strict routing metrics;
+- add offline validation tests for evaluation coverage;
+- research a current free-tier <=35B model candidate and document the evaluation workflow.
