@@ -15,9 +15,11 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 1: routing skeleton
+## Milestone 2: safe calculator
 
-This branch establishes the architecture before implementing skill behavior.
+The routing skeleton is preserved, and the calculator skill now performs real,
+deterministic arithmetic. The other three skills and multi-skill orchestration
+remain placeholders.
 
 Current flow:
 
@@ -28,7 +30,11 @@ Current flow:
       |
       +--> summarizer      (placeholder)
       +--> translator      (placeholder)
-      +--> calculator      (placeholder)
+      +--> calculator
+             |
+             +--> normalize digits/operators
+             +--> extract arithmetic expression
+             +--> restricted AST evaluator
       +--> general_chat    (placeholder / fallback)
       +--> multi_skill     (orchestration placeholder)
       |
@@ -58,6 +64,8 @@ For two-skill requests, the router distinguishes dependency from independence. F
         calculator.py
         general_chat.py
     tests/
+      test_calculator.py
+      test_routing.py
       test_router_schema.py
     docs/
       AI_USAGE.md
@@ -101,7 +109,25 @@ Requests that do not clearly require summarization, translation, or calculation 
 
 ### Persian support
 
-The routing prompt explicitly requires understanding both Persian and English. Dedicated Persian routing and output cases will be added to the evaluation set when the skill implementations are introduced.
+The routing prompt explicitly requires understanding both Persian and English.
+The calculator normalizes Persian and Arabic digits, Persian decimal and
+thousands separators, and a deliberately small set of written operators. For
+example, `حاصل ۱۲۵ ضربدر ۳۸ چقدر است؟` is interpreted as `125*38` and evaluated
+as `4750`. This is not a complete Persian mathematical-language parser.
+
+### Calculator safety
+
+Natural-language interpretation is separated from computation. The current
+interpreter normalizes common English/Persian operator phrases and extracts an
+arithmetic expression. The evaluator parses that expression with Python's AST
+module and recursively executes only numeric literals, parentheses, unary
+`+`/`-`, and binary `+`, `-`, `*`, `/`, `**`, and `%`.
+
+The evaluator never calls `eval`. Names, function calls, attributes,
+collections, comparisons, floor division, bitwise operations, booleans, and
+other Python syntax are rejected. Expression length, AST node count, exponent
+size, result magnitude, and finite numeric results are bounded to reduce
+resource-exhaustion risk. Division and modulo by zero return a controlled error.
 
 ### Model configuration
 
@@ -109,7 +135,7 @@ The provider/model is environment-configured. Before submission, the exact free-
 
 ## Next milestones
 
-1. Implement and test the safe calculator tool.
+1. Review the calculator implementation before proceeding.
 2. Implement Summarizer, Translator, and General Chat prompts/nodes.
 3. Implement sequential and parallel two-skill orchestration.
 4. Add 10-15 English/Persian evaluation prompts and report exact routing accuracy.
