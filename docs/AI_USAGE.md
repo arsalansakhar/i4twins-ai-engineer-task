@@ -65,3 +65,8 @@ Milestone 7 live-evaluation follow-up:
 - ChatGPT helped separate provider availability from routing-quality metrics;
 - the evaluator was updated with spacing, conservative retry/backoff, and incomplete-run reporting;
 - the candidate was changed to Qwen3.8 27B free because the current OpenRouter endpoint is <=35B and supports JSON-schema structured outputs.
+
+
+Second Milestone 7 live-evaluation follow-up:
+- repeated 429s persisted on the Qwen free endpoint despite spacing and retry/backoff;
+- the candidate was switched to Liquid LFM2.5-2.6B free, which is <=35B and currently advertises JSON-schema structured outputs on OpenRouter.
