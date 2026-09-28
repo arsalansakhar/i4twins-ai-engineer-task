@@ -74,3 +74,12 @@ def test_translator_trims_outer_whitespace() -> None:
     result = make_translator_node(model)({"user_input": "Translate this to Persian."})
 
     assert result == {"final_response": "translated text"}
+
+
+
+def test_translator_prompt_preserves_quantitative_direction() -> None:
+    prompt = TRANSLATOR_SYSTEM_PROMPT.lower()
+
+    assert "reduced by 30%" in prompt
+    assert "reduced to 30%" in prompt
+    assert "relative change" in prompt
