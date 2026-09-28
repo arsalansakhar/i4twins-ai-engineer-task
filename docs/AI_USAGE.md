@@ -42,3 +42,11 @@ For Milestone 5, ChatGPT was used to help:
 - wire the shared LLM instance into the General Chat path;
 - add mocked English/Persian greeting and general-question tests;
 - document fallback behavior and prompt-scoping rationale.
+
+
+For Milestone 6, ChatGPT was used to help:
+
+- design and implement the two-skill orchestration control node;
+- implement dependent sequential handoff and genuine concurrent parallel execution;
+- add orchestration and graph-path tests;
+- document execution semantics and calculator-specific handoff safety.
