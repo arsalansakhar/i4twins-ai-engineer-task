@@ -253,9 +253,9 @@ rerun after the final fixes.
 
 ### Model configuration
 
-Provider: OpenRouter  
-Model: `liquid/lfm-2.5-2.6b:free`  
-Model family/size: Liquid LFM2.5-2.6B, 2.6B parameters  
+- Provider: OpenRouter
+- Model: `liquid/lfm-2.5-2.6b:free`
+- Model family/size: Liquid LFM2.5-2.6B, 2.6B parameters
 Configured LLM count: one shared LLM configuration for router, summarizer, translator, and General Chat; the calculator is deterministic and does not use an LLM.
 
 The model is environment-configured so it can be replaced without changing graph code. The submitted evaluation is tied to the exact model ID above.
