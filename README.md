@@ -15,7 +15,7 @@ The router must accept a free-form user request and return a structured, validat
 
 The assignment explicitly prioritizes routing correctness, prompt engineering, graph design, code clarity, documentation, Persian handling, and edge cases over production infrastructure.
 
-## Milestone 7: evaluation suite
+## Complete prototype
 
 The routing skeleton, all four required skills, and sequential/parallel two-skill orchestration are present. A committed 15-case routing evaluation suite now measures live skill detection and execution-mode accuracy against the configured provider.
 
@@ -76,11 +76,16 @@ For two-skill requests, the router distinguishes dependency from independence. `
       test_general_chat.py
       test_orchestration.py
       test_router_schema.py
+      test_router_prompt.py
       test_evaluation_cases.py
+      test_evaluation_runner.py
+      test_smoke_runner.py
     evaluation/
       __init__.py
       evaluation_cases.json
       run_routing_eval.py
+      smoke_cases.json
+      run_smoke_eval.py
     docs/
       AI_USAGE.md
     main.py
@@ -113,7 +118,7 @@ Run the live routing evaluation after configuring `.env`:
 
 The default evaluator delay is 4 seconds between cases to stay below the free-tier per-minute request ceiling.
 
-Run the current CLI skeleton:
+Run the CLI:
 
     python main.py
 
@@ -209,7 +214,42 @@ Final routing evaluation:
 | Model-output errors | 0 |
 | Other provider/runtime errors | 0 |
 
-The offline suite also passed 67/67 tests on Python 3.12.3. These results describe this fixed 15-case evaluation set; they are not a claim of universal routing accuracy.
+The offline suite passed 77/77 tests on Python 3.12.3. These results describe
+the fixed 15-case evaluation set and are not a claim of universal routing
+accuracy.
+
+### End-to-end smoke evaluation
+
+The smoke suite exercises seven compiled-graph scenarios separately from the
+routing-only evaluation: English summarization, translation in both directions,
+Persian calculation, Persian General Chat, sequential summarize-then-translate,
+and parallel translation plus calculation. Automated checks validate route and
+output shape, while semantic translation and summarization quality still
+require human review.
+
+The first live run completed six of seven cases before the OpenRouter free-tier
+daily quota was exhausted. All six completed cases passed their automated
+checks. Manual review nevertheless found a real translation defect: the source
+meaning `reduced vibration by 30 percent` became the Persian equivalent of
+`reduced vibration to 30 percent`. The translator prompt and a narrow
+quantitative-direction postcondition now preserve `by` versus `to`, and an
+offline regression test locks the behavior. A separate parallel-case defect
+was also fixed: sentence-ending punctuation is no longer retained as a decimal
+point, and each LLM-backed parallel branch receives an explicitly scoped task.
+
+The final targeted live run covered the three high-risk cases and passed 3/3
+automated checks with zero provider/runtime errors:
+
+- English-to-Persian translation preserved `0 to 60 bar` without commentary;
+- sequential summarize-then-translate used the expected route and preserved a
+  30 percent relative vibration reduction, `8 hours -> 5 hours` maintenance
+  downtime, and unchanged flow rate;
+- parallel translation plus calculation returned labeled outputs, a reasonable
+  Persian translation of `hello`, and exactly `12*9 = 108`.
+
+All three outputs were manually reviewed. This targeted 3/3 result is not a
+claim that every possible generative output or all seven smoke cases were
+rerun after the final fixes.
 
 ### Model configuration
 
@@ -220,11 +260,49 @@ Configured LLM count: one shared LLM configuration for router, summarizer, trans
 
 The model is environment-configured so it can be replaced without changing graph code. The submitted evaluation is tied to the exact model ID above.
 
-## Remaining validation before submission
+### Routing stability guard
 
-1. Run end-to-end smoke cases through the compiled graph for each single skill plus sequential and parallel two-skill flows.
-2. Review the actual user-visible outputs, especially Persian summarization/translation and clarification behavior.
-3. Complete the final limitations, production-extension, assumptions, and submission-hygiene audit.
+The LLM remains the structured router. A narrow deterministic post-validation
+guard corrects only an explicit summarize-then-translate workflow when a small
+model contradicts the unambiguous sequential intent. It does not infer general
+routes or alter independent summarize-and-translate requests. After adding the
+guard, the unchanged 15-case routing evaluation was rerun and remained 15/15.
+
+## Assumptions
+
+- Requests contain at most two relevant operations, as defined by the assignment.
+- An explicit translation target language is authoritative; if it is genuinely
+  missing, the translator asks a concise clarification.
+- General Chat is the fallback outside summarization, translation, and calculation.
+- Conversation memory, persistence, authentication, deployment infrastructure,
+  and more than four user-facing skills are outside the prototype scope.
+- Provider/model selection is environment-configured, but the reported live
+  results are specifically tied to `liquid/lfm-2.5-2.6b:free` on OpenRouter.
+
+## Known limitations
+
+- LLM-backed routing and generation remain probabilistic.
+- The fixed routing evaluation contains only 15 cases and is not comprehensive.
+- OpenRouter free-tier quotas can interrupt live evaluation.
+- Calculator natural-language extraction intentionally recognizes a limited
+  operator vocabulary rather than arbitrary mathematical prose.
+- Parallel execution uses a local two-worker `ThreadPoolExecutor` inside one
+  LangGraph orchestration node, rather than native graph fan-out and reducers.
+- The prototype has no production authentication, persistence, conversation
+  memory, tracing dashboard, or circuit breaker.
+- Smoke assertions cover route and output shape but cannot establish semantic
+  translation or summarization quality without human review.
+
+## Production extensions
+
+A production version would add provider failover, a circuit breaker, exponential
+backoff with jitter, tracing plus latency/error metrics, prompt/model version
+tracking, a larger multilingual regression set, and human or rubric-based
+semantic evaluation. At larger scale, native LangGraph fan-out/reducers would
+replace the local thread pool. Natural-language math interpretation could be
+expanded while retaining the deterministic safe evaluator. Managed secret
+storage, authentication/authorization, and CI for offline tests would also be
+required.
 
 ## AI usage disclosure
 

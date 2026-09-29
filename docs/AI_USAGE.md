@@ -86,3 +86,25 @@ Final Milestone 7 validation:
 - ordered-skill, skill-set, execution-mode, and full-route accuracy were each 100.0%;
 - the offline suite passed 67/67 tests;
 - ChatGPT helped interpret and document the results, while the live run itself was executed and verified by the candidate.
+
+
+End-to-end validation and submission review:
+- AI assistance helped design the seven-case full-graph smoke suite and its transparent route/output-shape checks;
+- analyze the provider-limited run that completed six of seven cases;
+- identify the quantitative `reduced by` versus `reduced to` translation defect;
+- refine the translator prompt and add a quantitative-direction regression test;
+- add targeted smoke-case rerun support;
+- review final README coverage and repository submission hygiene.
+
+The candidate executed and reviewed the live evaluations and remains responsible
+for judging the semantic quality of their outputs.
+
+Final validation follow-up:
+- AI assistance helped diagnose a Windows console Unicode reporting failure and add UTF-8-safe report handling;
+- identify and repair sentence-punctuation leakage in calculator extraction and cross-skill leakage in parallel execution;
+- add a narrow quantitative-direction postcondition after the prompt-only fix proved insufficient;
+- add a high-confidence sequential-routing guard after a live stochastic misroute;
+- add regression tests for each observed failure and review the final targeted outputs.
+
+The unchanged 15-case routing evaluation was rerun after the routing guard, and
+the candidate manually reviewed the final three-case targeted smoke report.
