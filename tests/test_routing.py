@@ -5,7 +5,7 @@ from collections.abc import Callable
 import pytest
 
 import app.graph as graph_module
-from app.router import make_router_node
+from app.router import _enforce_explicit_workflow, make_router_node
 from app.state import RouterDecision
 
 
@@ -44,6 +44,34 @@ def test_router_node_produces_valid_router_decision() -> None:
     assert model.structured_kwargs == {"method": "json_schema", "strict": True}
     assert result == {"router_decision": expected}
     assert isinstance(result["router_decision"], RouterDecision)
+
+
+def test_explicit_summarize_then_translate_overrides_single_skill_misroute() -> None:
+    incorrect = RouterDecision(skills=["summarizer"], execution_mode="single")
+
+    corrected = _enforce_explicit_workflow(
+        "Summarize this text and then translate the summary to Persian.",
+        incorrect,
+    )
+
+    assert corrected == RouterDecision(
+        skills=["summarizer", "translator"],
+        execution_mode="sequential",
+    )
+
+
+def test_independent_summarize_and_translate_request_is_not_overridden() -> None:
+    parallel = RouterDecision(
+        skills=["summarizer", "translator"],
+        execution_mode="parallel",
+    )
+
+    unchanged = _enforce_explicit_workflow(
+        "Summarize report A and separately translate phrase B.",
+        parallel,
+    )
+
+    assert unchanged is parallel
 
 
 def _marker_node(name: str) -> Callable[[dict[str, object]], dict[str, str]]:

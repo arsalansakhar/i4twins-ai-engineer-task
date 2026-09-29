@@ -1,6 +1,9 @@
 """Offline tests for the end-to-end smoke-evaluation harness."""
 
+from unittest.mock import Mock
+
 from app.state import RouterDecision
+import evaluation.run_smoke_eval as smoke_runner
 from evaluation.run_smoke_eval import _check_output, run_smoke_cases, select_cases
 
 
@@ -96,3 +99,14 @@ def test_select_cases_supports_targeted_reruns() -> None:
     selected = select_cases(cases, ["second", "third"])
 
     assert [case["id"] for case in selected] == ["second", "third"]
+
+
+def test_configure_utf8_output_supports_persian_on_windows_console(
+    monkeypatch,
+) -> None:
+    stdout = Mock()
+    monkeypatch.setattr(smoke_runner.sys, "stdout", stdout)
+
+    smoke_runner.configure_utf8_output()
+
+    stdout.reconfigure.assert_called_once_with(encoding="utf-8")

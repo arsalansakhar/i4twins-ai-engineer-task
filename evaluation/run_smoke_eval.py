@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 import time
 from pathlib import Path
 from typing import Any, Protocol
@@ -15,6 +16,14 @@ from app.state import RouterDecision
 DEFAULT_CASES = Path(__file__).with_name("smoke_cases.json")
 _PERSIAN_RE = re.compile(r"[\u0600-\u06FF]")
 _ASCII_LETTER_RE = re.compile(r"[A-Za-z]")
+
+
+def configure_utf8_output() -> None:
+    """Allow Persian responses to print on legacy Windows console encodings."""
+
+    reconfigure = getattr(sys.stdout, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8")
 
 
 class InvokableGraph(Protocol):
@@ -233,6 +242,7 @@ def print_report(report: dict[str, Any]) -> None:
 
 
 def main() -> None:
+    configure_utf8_output()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cases", type=Path, default=DEFAULT_CASES)
     parser.add_argument("--output", type=Path)
@@ -254,8 +264,6 @@ def main() -> None:
         max_retries=args.max_retries,
         retry_backoff_seconds=args.retry_backoff_seconds,
     )
-    print_report(report)
-
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(
@@ -263,6 +271,8 @@ def main() -> None:
             encoding="utf-8",
         )
         print(f"Saved JSON report to {args.output}")
+
+    print_report(report)
 
 
 if __name__ == "__main__":

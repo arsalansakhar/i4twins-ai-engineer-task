@@ -70,7 +70,7 @@ def test_sequential_calculator_handoff_uses_only_intermediate_result() -> None:
     assert seen["calculator_input"] == "12 * 9"
 
 
-def test_parallel_execution_runs_both_skills_on_original_request() -> None:
+def test_parallel_execution_scopes_llm_skill_and_preserves_calculator_input() -> None:
     barrier = Barrier(2, timeout=2)
     seen: dict[str, str] = {}
 
@@ -98,7 +98,9 @@ def test_parallel_execution_runs_both_skills_on_original_request() -> None:
 
     result = node({"user_input": original, "router_decision": decision})
 
-    assert seen == {"translator": original, "calculator": original}
+    assert seen["calculator"] == original
+    assert "perform ONLY the translator portion" in seen["translator"]
+    assert original in seen["translator"]
     assert result == {
         "final_response": "[translator]\nسلام\n\n[calculator]\n12*9 = 108"
     }

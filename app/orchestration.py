@@ -54,6 +54,21 @@ def _format_parallel_results(results: list[tuple[SkillName, str]]) -> str:
     )
 
 
+def _build_parallel_input(original_request: str, skill: SkillName) -> str:
+    """Scope an independent branch so an LLM skill does not perform its peer."""
+
+    if skill == "calculator":
+        return original_request
+    return (
+        "Multi-skill orchestration directive: perform ONLY the "
+        f"{skill} portion of the request below. Do not perform, explain, or "
+        "repeat results for any other requested operation. Return only this "
+        "skill's answer.\n\n"
+        "Original user request:\n"
+        f"{original_request}"
+    )
+
+
 def make_multi_skill_node(skill_nodes: dict[SkillName, SkillNode]):
     """Return an orchestrator for validated two-skill router decisions.
 
@@ -91,10 +106,14 @@ def make_multi_skill_node(skill_nodes: dict[SkillName, SkillNode]):
             with ThreadPoolExecutor(max_workers=2) as executor:
                 futures = {
                     first_skill: executor.submit(
-                        _run_skill, first_node, state["user_input"]
+                        _run_skill,
+                        first_node,
+                        _build_parallel_input(state["user_input"], first_skill),
                     ),
                     second_skill: executor.submit(
-                        _run_skill, second_node, state["user_input"]
+                        _run_skill,
+                        second_node,
+                        _build_parallel_input(state["user_input"], second_skill),
                     ),
                 }
                 ordered_results = [
