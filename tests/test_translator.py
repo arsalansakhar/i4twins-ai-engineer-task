@@ -3,7 +3,7 @@
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from app.prompts.translator import TRANSLATOR_SYSTEM_PROMPT
-from app.skills.translator import make_translator_node
+from app.skills.translator import _preserve_quantitative_direction, make_translator_node
 
 
 class _RecordingModel:
@@ -74,3 +74,21 @@ def test_translator_trims_outer_whitespace() -> None:
     result = make_translator_node(model)({"user_input": "Translate this to Persian."})
 
     assert result == {"final_response": "translated text"}
+
+
+
+def test_translator_prompt_preserves_quantitative_direction() -> None:
+    prompt = TRANSLATOR_SYSTEM_PROMPT.lower()
+
+    assert "reduced by 30%" in prompt
+    assert "reduced to 30%" in prompt
+    assert "relative change" in prompt
+
+
+def test_translation_guard_repairs_relative_percent_changed_to_final_value() -> None:
+    source = "The pump reduced vibration by 30 percent."
+    incorrect = "پمپ لرزش را به ۳۰ درصد کاهش داد."
+
+    assert _preserve_quantitative_direction(source, incorrect) == (
+        "پمپ لرزش را ۳۰ درصد کاهش داد."
+    )

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "summary_en_brief",
+    "language": "en",
+    "prompt": "Summarize this briefly: The factory reduced energy consumption by 18% after replacing three compressors, while production volume stayed unchanged.",
+    "expected_skills": ["summarizer"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "summary_fa",
+    "language": "fa",
+    "prompt": "این متن را خلاصه کن: شرکت در سه‌ماهه دوم فروش خود را ۱۲ درصد افزایش داد، اما هزینه‌های حمل‌ونقل نیز ۵ درصد بیشتر شد.",
+    "expected_skills": ["summarizer"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "summary_en_technical",
+    "language": "en",
+    "prompt": "Give me the key points from this text: The controller samples four gas detectors every 250 ms. If two detectors exceed the alarm threshold, the shutdown relay is energized and the event is logged.",
+    "expected_skills": ["summarizer"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "translate_en_to_fa",
+    "language": "en",
+    "prompt": "Translate to Persian: The pressure transmitter is calibrated from 0 to 60 bar.",
+    "expected_skills": ["translator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "translate_fa_to_en",
+    "language": "fa",
+    "prompt": "این جمله را به انگلیسی ترجمه کن: دمای عملیاتی مخزن ۱۵۰ درجه سانتی‌گراد است.",
+    "expected_skills": ["translator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "translate_question_as_content",
+    "language": "en",
+    "prompt": "Translate to Persian: What is the capital of France?",
+    "expected_skills": ["translator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "calculator_en",
+    "language": "en",
+    "prompt": "Calculate (125 * 38) + 12.",
+    "expected_skills": ["calculator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "calculator_fa",
+    "language": "fa",
+    "prompt": "حاصل ۱۲۵ ضربدر ۳۸ چقدر است؟",
+    "expected_skills": ["calculator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "general_chat_fa_greeting",
+    "language": "fa",
+    "prompt": "سلام، حالت چطوره؟",
+    "expected_skills": ["general_chat"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "general_chat_en_question",
+    "language": "en",
+    "prompt": "What is the difference between RAM and storage?",
+    "expected_skills": ["general_chat"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "sequential_summary_translate_en",
+    "language": "en",
+    "prompt": "Summarize this text and then translate the summary to Persian: The new pump reduced vibration by 30% and cut maintenance downtime from 8 hours to 5 hours per month.",
+    "expected_skills": ["summarizer", "translator"],
+    "expected_mode": "sequential"
+  },
+  {
+    "id": "sequential_summary_translate_fa",
+    "language": "fa",
+    "prompt": "این متن را خلاصه کن و بعد خلاصه را به انگلیسی ترجمه کن: سامانه جدید زمان پاسخ را از ۲۰۰ میلی‌ثانیه به ۱۲۰ میلی‌ثانیه کاهش داد و مصرف حافظه نیز کمتر شد.",
+    "expected_skills": ["summarizer", "translator"],
+    "expected_mode": "sequential"
+  },
+  {
+    "id": "parallel_translate_calculate",
+    "language": "en",
+    "prompt": "Translate 'hello' to Persian and calculate 12 * 9.",
+    "expected_skills": ["translator", "calculator"],
+    "expected_mode": "parallel"
+  },
+  {
+    "id": "translator_missing_target",
+    "language": "en",
+    "prompt": "Translate this sentence: The alarm is active.",
+    "expected_skills": ["translator"],
+    "expected_mode": "single"
+  },
+  {
+    "id": "fallback_unclear_general",
+    "language": "en",
+    "prompt": "Can you help me figure out what I should do next?",
+    "expected_skills": ["general_chat"],
+    "expected_mode": "single"
+  }
+]

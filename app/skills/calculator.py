@@ -56,8 +56,8 @@ _OPERATOR_PHRASES = (
     (r"باقی\s*مانده|باقیمانده", "%"),
 )
 
-_TOKEN_PATTERN = re.compile(r"\*\*|\d+(?:\.\d*)?|\.\d+|[+\-*/%()]|\S+")
-_ARITHMETIC_TOKEN = re.compile(r"^(?:\*\*|\d+(?:\.\d*)?|\.\d+|[+\-*/%()])$")
+_TOKEN_PATTERN = re.compile(r"\*\*|\d+(?:\.\d+)?|\.\d+|[+\-*/%()]|\S+")
+_ARITHMETIC_TOKEN = re.compile(r"^(?:\*\*|\d+(?:\.\d+)?|\.\d+|[+\-*/%()])$")
 
 _BINARY_OPERATORS: dict[type[ast.operator], Callable[[Number, Number], Number]] = {
     ast.Add: operator.add,

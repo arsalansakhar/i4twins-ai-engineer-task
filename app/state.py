@@ -14,10 +14,17 @@ class RouterDecision(BaseModel):
     skills: list[SkillName] = Field(
         min_length=1,
         max_length=2,
-        description="One or two relevant skills, ordered by intended execution when sequential.",
+        description=(
+            "One or two relevant skills. If there is one skill, execution_mode must "
+            "be single. If there are two skills, keep dependency order when sequential."
+        ),
     )
     execution_mode: ExecutionMode = Field(
-        description="single for one skill; sequential or parallel for two skills."
+        description=(
+            "Use single only with exactly one skill. Use sequential or parallel only "
+            "with exactly two skills; sequential for dependent operations and parallel "
+            "for independent operations."
+        )
     )
 
     @model_validator(mode="after")

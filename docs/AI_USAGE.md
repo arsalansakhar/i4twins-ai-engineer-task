@@ -50,3 +50,61 @@ For Milestone 6, ChatGPT was used to help:
 - implement dependent sequential handoff and genuine concurrent parallel execution;
 - add orchestration and graph-path tests;
 - document execution semantics and calculator-specific handoff safety.
+
+
+For Milestone 7, ChatGPT was used to help:
+
+- design the 15-case English/Persian routing evaluation set;
+- implement the live evaluation harness and strict routing metrics;
+- add offline validation tests for evaluation coverage;
+- research a current free-tier <=35B model candidate and document the evaluation workflow.
+
+
+Milestone 7 live-evaluation follow-up:
+- the first Gemma run was dominated by free-tier/upstream HTTP 429 failures and one non-schema output;
+- ChatGPT helped separate provider availability from routing-quality metrics;
+- the evaluator was updated with spacing, conservative retry/backoff, and incomplete-run reporting;
+- the candidate was changed to Qwen3.8 27B free because the current OpenRouter endpoint is <=35B and supports JSON-schema structured outputs.
+
+
+Second Milestone 7 live-evaluation follow-up:
+- repeated 429s persisted on the Qwen free endpoint despite spacing and retry/backoff;
+- the candidate was switched to Liquid LFM2.5-2.6B free, which is <=35B and currently advertises JSON-schema structured outputs on OpenRouter.
+
+
+Third Milestone 7 live-evaluation follow-up:
+- the LFM2.5-2.6B diagnostic run returned 14/15 structured decisions;
+- 13/14 completed routes were fully correct (92.9%), but the run remained incomplete;
+- one translated-question case violated the one-skill/single-mode invariant;
+- one Persian summarize-then-translate case missed the second operation;
+- ChatGPT refined only those observed failure modes while keeping the 15-case evaluation set unchanged.
+
+
+Final Milestone 7 validation:
+- the unchanged 15-case routing set was rerun after the evidence-driven prompt refinement;
+- all 15 cases returned valid structured decisions;
+- ordered-skill, skill-set, execution-mode, and full-route accuracy were each 100.0%;
+- the offline suite passed 67/67 tests;
+- ChatGPT helped interpret and document the results, while the live run itself was executed and verified by the candidate.
+
+
+End-to-end validation and submission review:
+- AI assistance helped design the seven-case full-graph smoke suite and its transparent route/output-shape checks;
+- analyze the provider-limited run that completed six of seven cases;
+- identify the quantitative `reduced by` versus `reduced to` translation defect;
+- refine the translator prompt and add a quantitative-direction regression test;
+- add targeted smoke-case rerun support;
+- review final README coverage and repository submission hygiene.
+
+The candidate executed and reviewed the live evaluations and remains responsible
+for judging the semantic quality of their outputs.
+
+Final validation follow-up:
+- AI assistance helped diagnose a Windows console Unicode reporting failure and add UTF-8-safe report handling;
+- identify and repair sentence-punctuation leakage in calculator extraction and cross-skill leakage in parallel execution;
+- add a narrow quantitative-direction postcondition after the prompt-only fix proved insufficient;
+- add a high-confidence sequential-routing guard after a live stochastic misroute;
+- add regression tests for each observed failure and review the final targeted outputs.
+
+The unchanged 15-case routing evaluation was rerun after the routing guard, and
+the candidate manually reviewed the final three-case targeted smoke report.

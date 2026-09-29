@@ -72,6 +72,10 @@ def test_english_natural_language_request_is_extracted() -> None:
     assert extract_expression("What is 12 multiplied by (3 plus 2)?") == "12*(3+2)"
 
 
+def test_sentence_period_is_not_treated_as_decimal_point() -> None:
+    assert extract_expression("calculate 12 * 9.") == "12*9"
+
+
 def test_missing_expression_is_reported() -> None:
     with pytest.raises(ExpressionExtractionError):
         extract_expression("سلام، حالت چطور است؟")

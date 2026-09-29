@@ -1,0 +1,55 @@
+[
+  {
+    "id": "summary_en_end_to_end",
+    "prompt": "Summarize this briefly: The plant replaced three old compressors with variable-speed units. Electricity use fell by 18 percent, production stayed unchanged, and unplanned compressor maintenance fell from six hours to three hours per month.",
+    "expected_skills": ["summarizer"],
+    "expected_mode": "single",
+    "checks": {"non_empty": true, "max_chars": 260}
+  },
+  {
+    "id": "translate_en_to_fa_end_to_end",
+    "prompt": "Translate to Persian: The pressure transmitter is calibrated from 0 to 60 bar.",
+    "expected_skills": ["translator"],
+    "expected_mode": "single",
+    "checks": {"non_empty": true, "contains_persian": true}
+  },
+  {
+    "id": "translate_fa_to_en_end_to_end",
+    "prompt": "این جمله را به انگلیسی ترجمه کن: دمای عملیاتی مخزن ۱۵۰ درجه سانتی‌گراد است.",
+    "expected_skills": ["translator"],
+    "expected_mode": "single",
+    "checks": {"non_empty": true, "contains_ascii_letter": true}
+  },
+  {
+    "id": "calculator_fa_end_to_end",
+    "prompt": "حاصل ۱۲۵ ضربدر ۳۸ چقدر است؟",
+    "expected_skills": ["calculator"],
+    "expected_mode": "single",
+    "checks": {"non_empty": true, "contains_all": ["125*38 = 4750"]}
+  },
+  {
+    "id": "general_chat_fa_end_to_end",
+    "prompt": "سلام، در یک جمله بگو RAM چه کاری انجام می‌دهد؟",
+    "expected_skills": ["general_chat"],
+    "expected_mode": "single",
+    "checks": {"non_empty": true, "contains_persian": true}
+  },
+  {
+    "id": "sequential_summary_translate_end_to_end",
+    "prompt": "Summarize this text and then translate the summary to Persian: The new pump reduced vibration by 30 percent and cut monthly maintenance downtime from 8 hours to 5 hours without changing flow rate.",
+    "expected_skills": ["summarizer", "translator"],
+    "expected_mode": "sequential",
+    "checks": {"non_empty": true, "contains_persian": true}
+  },
+  {
+    "id": "parallel_translate_calculate_end_to_end",
+    "prompt": "Translate 'hello' to Persian and calculate 12 * 9.",
+    "expected_skills": ["translator", "calculator"],
+    "expected_mode": "parallel",
+    "checks": {
+      "non_empty": true,
+      "contains_persian": true,
+      "contains_all": ["[translator]", "[calculator]", "12*9 = 108"]
+    }
+  }
+]

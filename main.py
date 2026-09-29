@@ -5,7 +5,7 @@ from app.graph import build_graph
 
 def main() -> None:
     graph = build_graph()
-    print("I4Twins Multi-Skill Agent -- Milestone 1")
+    print("I4Twins Multi-Skill Agent")
     print("Type 'exit' to quit.")
 
     while True:
